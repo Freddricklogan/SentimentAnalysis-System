@@ -1,6 +1,6 @@
 # Advanced Sentiment Analysis System
 
-<img src="images/sentimentsystems.jpg" alt="Portfolio Overview" width="65%">
+<img src="images/sentimentsystem.jpg" alt="Portfolio Overview" width="65%">
 
 ## Overview
 A comprehensive text analysis tool that performs sentiment analysis, emotion detection, and aspect-based sentiment analysis on user-provided text.
