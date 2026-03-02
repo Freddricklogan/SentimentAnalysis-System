@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis System</title>
+    <style>
+        /* ---------- Reset & Base ---------- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+                         Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ---------- Layout ---------- */
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+
+        /* ---------- Header ---------- */
+        header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #16213e;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 1.05rem;
+            color: #555;
+        }
+
+        /* ---------- Card ---------- */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 32px;
+            margin-bottom: 28px;
+        }
+
+        /* ---------- Form ---------- */
+        .card label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s;
+            background: #fafafa;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4361ee;
+            background: #fff;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.82rem;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:active { transform: scale(0.97); }
+
+        .btn-primary {
+            background: #4361ee;
+            color: #fff;
+        }
+
+        .btn-primary:hover { background: #3a56d4; }
+
+        .btn-primary:disabled {
+            background: #a0b0f0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-secondary:hover { background: #dee2e6; }
+
+        /* ---------- Spinner ---------- */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ---------- Error ---------- */
+        .error-msg {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        /* ---------- Results Section ---------- */
+        #results {
+            display: none;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .results-header h2 {
+            font-size: 1.3rem;
+            color: #16213e;
+        }
+
+        /* ---------- Sentiment Badge ---------- */
+        .sentiment-overview {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .sentiment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sentiment-badge.positive { background: #d1fae5; color: #065f46; }
+        .sentiment-badge.negative { background: #fee2e2; color: #991b1b; }
+        .sentiment-badge.neutral  { background: #e0e7ff; color: #3730a3; }
+
+        .sentiment-badge .icon { font-size: 1.25rem; }
+
+        /* ---------- Confidence Meter ---------- */
+        .confidence-block {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .confidence-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .confidence-bar-track {
+            height: 12px;
+            background: #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.6s ease;
+        }
+
+        .confidence-bar-fill.high   { background: #10b981; }
+        .confidence-bar-fill.medium { background: #f59e0b; }
+        .confidence-bar-fill.low    { background: #ef4444; }
+
+        .confidence-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            margin-top: 4px;
+        }
+
+        /* ---------- Section Divider ---------- */
+        .divider {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 24px 0;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #16213e;
+            margin-bottom: 14px;
+        }
+
+        /* ---------- Emotions Grid ---------- */
+        .emotions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 14px;
+        }
+
+        .emotion-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .emotion-card .emotion-icon {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .emotion-card .emotion-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            text-transform: capitalize;
+            margin-bottom: 6px;
+        }
+
+        .emotion-bar-track {
+            height: 6px;
+            background: #dee2e6;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .emotion-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .emotion-card .emotion-value {
+            font-size: 0.78rem;
+            color: #666;
+        }
+
+        /* emotion colors */
+        .emotion-joy       .emotion-bar-fill { background: #fbbf24; }
+        .emotion-sadness    .emotion-bar-fill { background: #60a5fa; }
+        .emotion-anger      .emotion-bar-fill { background: #f87171; }
+        .emotion-fear       .emotion-bar-fill { background: #a78bfa; }
+        .emotion-surprise   .emotion-bar-fill { background: #34d399; }
+
+        /* ---------- Aspects Table ---------- */
+        .aspects-section { display: none; }
+
+        .aspects-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .aspects-table th,
+        .aspects-table td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.93rem;
+        }
+
+        .aspects-table th {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .aspect-name { text-transform: capitalize; font-weight: 600; }
+
+        .aspect-sentiment {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .aspect-sentiment.positive { background: #d1fae5; color: #065f46; }
+        .aspect-sentiment.negative { background: #fee2e2; color: #991b1b; }
+        .aspect-sentiment.neutral  { background: #e0e7ff; color: #3730a3; }
+
+        /* ---------- Footer ---------- */
+        footer {
+            text-align: center;
+            font-size: 0.82rem;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 520px) {
+            .container { padding: 20px 12px 40px; }
+            .card { padding: 20px; }
+            header h1 { font-size: 1.5rem; }
+            .sentiment-overview { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <header>
+        <h1>Sentiment Analysis System</h1>
+        <p>Enter text below to analyze its sentiment, confidence, and emotional tone.</p>
+    </header>
+
+    <!-- Input Card -->
+    <div class="card">
+        <label for="text-input">Text to Analyze</label>
+        <textarea id="text-input" placeholder="Type or paste your text here... (e.g. a product review, tweet, or paragraph)"></textarea>
+        <div class="char-count"><span id="char-count">0</span> characters</div>
+
+        <div class="btn-row">
+            <button class="btn-primary" id="analyze-btn" type="button">Analyze Sentiment</button>
+            <button class="btn-secondary" id="clear-btn" type="button">Clear</button>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-msg" id="error-msg"></div>
+
+    <!-- Results Card -->
+    <div id="results" class="card">
+        <div class="results-header">
+            <h2>Analysis Results</h2>
+        </div>
+
+        <!-- Sentiment + Confidence -->
+        <div class="sentiment-overview">
+            <div class="sentiment-badge" id="sentiment-badge">
+                <span class="icon" id="sentiment-icon"></span>
+                <span id="sentiment-label"></span>
+            </div>
+            <div class="confidence-block">
+                <div class="confidence-label">Confidence</div>
+                <div class="confidence-bar-track">
+                    <div class="confidence-bar-fill" id="confidence-bar"></div>
+                </div>
+                <div class="confidence-value" id="confidence-value"></div>
+            </div>
+        </div>
+
+        <!-- Emotions -->
+        <hr class="divider">
+        <div class="section-title">Detected Emotions</div>
+        <div class="emotions-grid" id="emotions-grid"></div>
+
+        <!-- Aspects -->
+        <div class="aspects-section" id="aspects-section">
+            <hr class="divider">
+            <div class="section-title">Aspect-Based Sentiment</div>
+            <p style="font-size:0.85rem;color:#888;margin-bottom:10px;">
+                Aspects are extracted when the text contains 10+ words and mentions
+                recognized topics (price, quality, service, delivery, usability).
+            </p>
+            <table class="aspects-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Sentiment</th>
+                    </tr>
+                </thead>
+                <tbody id="aspects-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>Sentiment Analysis System &mdash; Demo Version</footer>
+
+</div>
+
+<script>
+(function () {
+    /* ---- DOM refs ---- */
+    var textInput     = document.getElementById('text-input');
+    var charCount     = document.getElementById('char-count');
+    var analyzeBtn    = document.getElementById('analyze-btn');
+    var clearBtn      = document.getElementById('clear-btn');
+    var errorMsg      = document.getElementById('error-msg');
+    var resultsCard   = document.getElementById('results');
+
+    var sentimentBadge = document.getElementById('sentiment-badge');
+    var sentimentIcon  = document.getElementById('sentiment-icon');
+    var sentimentLabel = document.getElementById('sentiment-label');
+    var confidenceBar  = document.getElementById('confidence-bar');
+    var confidenceVal  = document.getElementById('confidence-value');
+
+    var emotionsGrid   = document.getElementById('emotions-grid');
+    var aspectsSection = document.getElementById('aspects-section');
+    var aspectsBody    = document.getElementById('aspects-body');
+
+    /* ---- Emotion icon mapping ---- */
+    var emotionIcons = {
+        joy:      '\u{1F60A}',
+        sadness:  '\u{1F622}',
+        anger:    '\u{1F621}',
+        fear:     '\u{1F628}',
+        surprise: '\u{1F632}'
+    };
+
+    /* ---- Character counter ---- */
+    textInput.addEventListener('input', function () {
+        charCount.textContent = textInput.value.length;
+    });
+
+    /* ---- Clear button ---- */
+    clearBtn.addEventListener('click', function () {
+        textInput.value = '';
+        charCount.textContent = '0';
+        resultsCard.style.display = 'none';
+        errorMsg.style.display = 'none';
+    });
+
+    /* ---- Analyze button ---- */
+    analyzeBtn.addEventListener('click', function () {
+        var text = textInput.value.trim();
+        errorMsg.style.display = 'none';
+
+        if (!text) {
+            showError('Please enter some text to analyze.');
+            return;
+        }
+
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = '<span class="spinner"></span>Analyzing...';
+
+        /* Build form data (app.py reads request.form['text']) */
+        var formData = new FormData();
+        formData.append('text', text);
+
+        fetch('/analyze', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function (res) {
+            if (!res.ok) throw new Error('Server returned ' + res.status);
+            return res.json();
+        })
+        .then(function (data) {
+            renderResults(data);
+        })
+        .catch(function (err) {
+            showError('Analysis failed: ' + err.message);
+        })
+        .finally(function () {
+            analyzeBtn.disabled = false;
+            analyzeBtn.textContent = 'Analyze Sentiment';
+        });
+    });
+
+    /* ---- Render results ---- */
+    function renderResults(data) {
+        resultsCard.style.display = 'block';
+
+        /* -- Sentiment badge -- */
+        var sentiment = data.sentiment || 'neutral';
+        sentimentBadge.className = 'sentiment-badge ' + sentiment;
+
+        var icons = { positive: '\u{1F44D}', negative: '\u{1F44E}', neutral: '\u{1F610}' };
+        sentimentIcon.textContent = icons[sentiment] || '';
+        sentimentLabel.textContent = sentiment;
+
+        /* -- Confidence bar -- */
+        var conf = Math.round((data.confidence || 0) * 100);
+        var confClass = conf >= 70 ? 'high' : (conf >= 45 ? 'medium' : 'low');
+        confidenceBar.style.width = conf + '%';
+        confidenceBar.className = 'confidence-bar-fill ' + confClass;
+        confidenceVal.textContent = conf + '%';
+
+        /* -- Emotions -- */
+        emotionsGrid.innerHTML = '';
+        var emotions = data.emotions || {};
+        var emotionKeys = Object.keys(emotions);
+
+        /* Sort by intensity descending */
+        emotionKeys.sort(function (a, b) { return emotions[b] - emotions[a]; });
+
+        emotionKeys.forEach(function (name) {
+            var intensity = emotions[name];
+            var pct = Math.round(intensity * 100);
+            var icon = emotionIcons[name] || '\u{1F3AD}';
+
+            var card = document.createElement('div');
+            card.className = 'emotion-card emotion-' + name;
+            card.innerHTML =
+                '<div class="emotion-icon">' + icon + '</div>' +
+                '<div class="emotion-name">' + name + '</div>' +
+                '<div class="emotion-bar-track"><div class="emotion-bar-fill" style="width:' + pct + '%"></div></div>' +
+                '<div class="emotion-value">' + pct + '%</div>';
+            emotionsGrid.appendChild(card);
+        });
+
+        /* -- Aspects -- */
+        var aspects = data.aspects || {};
+        var aspectKeys = Object.keys(aspects);
+
+        if (aspectKeys.length > 0) {
+            aspectsSection.style.display = 'block';
+            aspectsBody.innerHTML = '';
+            aspectKeys.forEach(function (name) {
+                var sent = aspects[name];
+                var row = document.createElement('tr');
+                row.innerHTML =
+                    '<td class="aspect-name">' + escapeHtml(name) + '</td>' +
+                    '<td><span class="aspect-sentiment ' + sent + '">' + sent + '</span></td>';
+                aspectsBody.appendChild(row);
+            });
+        } else {
+            aspectsSection.style.display = 'none';
+        }
+
+        /* Smooth scroll to results */
+        resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /* ---- Helpers ---- */
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.style.display = 'block';
+        resultsCard.style.display = 'none';
+    }
+
+    function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    }
+})();
+</script>
+
+</body>
+</html>
