@@ -111,9 +111,8 @@ def detect_emotions(text):
                 
     # Normalize emotions to be between 0 and 1
     for emotion in emotions:
-        emotions[emotion] = min(emotions[emotion], 1.0)
-        # Add a small random factor
-        emotions[emotion] = round(emotions[emotion] + (random.random() * 0.1), 2)
+        # Add a small random factor, then clamp to [0, 1]
+        emotions[emotion] = round(min(emotions[emotion] + (random.random() * 0.1), 1.0), 2)
     
     return emotions
 
