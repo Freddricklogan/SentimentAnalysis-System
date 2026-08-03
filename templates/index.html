@@ -11,8 +11,8 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
                          Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
-            background: #f0f2f5;
-            color: #1a1a2e;
+            background: #f4f3ef;
+            color: #072c54;
             line-height: 1.6;
             min-height: 100vh;
         }
@@ -33,20 +33,20 @@
         header h1 {
             font-size: 2rem;
             font-weight: 700;
-            color: #16213e;
+            color: #0d3966;
             margin-bottom: 6px;
         }
 
         header p {
             font-size: 1.05rem;
-            color: #555;
+            color: #adc4e0;
         }
 
         /* ---------- Card ---------- */
         .card {
-            background: #fff;
+            background: #f4f3ef;
             border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 12px rgba(0, 19, 39, 0.08);
             padding: 32px;
             margin-bottom: 28px;
         }
@@ -57,32 +57,32 @@
             font-weight: 600;
             margin-bottom: 8px;
             font-size: 0.95rem;
-            color: #333;
+            color: #072c54;
         }
 
         textarea {
             width: 100%;
             min-height: 140px;
             padding: 14px;
-            border: 2px solid #ddd;
+            border: 2px solid #f4f3ef;
             border-radius: 8px;
             font-size: 1rem;
             font-family: inherit;
             resize: vertical;
             transition: border-color 0.2s;
-            background: #fafafa;
+            background: #f4f3ef;
         }
 
         textarea:focus {
             outline: none;
-            border-color: #4361ee;
-            background: #fff;
+            border-color: #7fb0e0;
+            background: #f4f3ef;
         }
 
         .char-count {
             text-align: right;
             font-size: 0.82rem;
-            color: #999;
+            color: #adc4e0;
             margin-top: 4px;
         }
 
@@ -105,32 +105,32 @@
         button:active { transform: scale(0.97); }
 
         .btn-primary {
-            background: #4361ee;
-            color: #fff;
+            background: #7fb0e0;
+            color: #f4f3ef;
         }
 
-        .btn-primary:hover { background: #3a56d4; }
+        .btn-primary:hover { background: #7fb0e0; }
 
         .btn-primary:disabled {
-            background: #a0b0f0;
+            background: #7fb0e0;
             cursor: not-allowed;
             transform: none;
         }
 
         .btn-secondary {
-            background: #e9ecef;
-            color: #495057;
+            background: #f4f3ef;
+            color: #adc4e0;
         }
 
-        .btn-secondary:hover { background: #dee2e6; }
+        .btn-secondary:hover { background: #f4f3ef; }
 
         /* ---------- Spinner ---------- */
         .spinner {
             display: inline-block;
             width: 18px;
             height: 18px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
+            border: 3px solid rgba(244, 243, 239,0.3);
+            border-top-color: #f4f3ef;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
             vertical-align: middle;
@@ -141,8 +141,8 @@
 
         /* ---------- Error ---------- */
         .error-msg {
-            background: #fee2e2;
-            color: #991b1b;
+            background: #f4f3ef;
+            color: #e0705f;
             padding: 12px 16px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -164,7 +164,7 @@
 
         .results-header h2 {
             font-size: 1.3rem;
-            color: #16213e;
+            color: #0d3966;
         }
 
         /* ---------- Sentiment Badge ---------- */
@@ -188,9 +188,9 @@
             letter-spacing: 0.5px;
         }
 
-        .sentiment-badge.positive { background: #d1fae5; color: #065f46; }
-        .sentiment-badge.negative { background: #fee2e2; color: #991b1b; }
-        .sentiment-badge.neutral  { background: #e0e7ff; color: #3730a3; }
+        .sentiment-badge.positive { background: #f4f3ef; color: #0d3966; }
+        .sentiment-badge.negative { background: #f4f3ef; color: #e0705f; }
+        .sentiment-badge.neutral  { background: #f4f3ef; color: #7fb0e0; }
 
         .sentiment-badge .icon { font-size: 1.25rem; }
 
@@ -202,13 +202,13 @@
 
         .confidence-label {
             font-size: 0.85rem;
-            color: #666;
+            color: #adc4e0;
             margin-bottom: 6px;
         }
 
         .confidence-bar-track {
             height: 12px;
-            background: #e9ecef;
+            background: #f4f3ef;
             border-radius: 6px;
             overflow: hidden;
         }
@@ -219,28 +219,28 @@
             transition: width 0.6s ease;
         }
 
-        .confidence-bar-fill.high   { background: #10b981; }
-        .confidence-bar-fill.medium { background: #f59e0b; }
-        .confidence-bar-fill.low    { background: #ef4444; }
+        .confidence-bar-fill.high   { background: #1f8a3f; }
+        .confidence-bar-fill.medium { background: #c9a44e; }
+        .confidence-bar-fill.low    { background: #e0705f; }
 
         .confidence-value {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #333;
+            color: #072c54;
             margin-top: 4px;
         }
 
         /* ---------- Section Divider ---------- */
         .divider {
             border: none;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #f4f3ef;
             margin: 24px 0;
         }
 
         .section-title {
             font-size: 1rem;
             font-weight: 700;
-            color: #16213e;
+            color: #0d3966;
             margin-bottom: 14px;
         }
 
@@ -252,7 +252,7 @@
         }
 
         .emotion-card {
-            background: #f8f9fa;
+            background: #f4f3ef;
             border-radius: 10px;
             padding: 14px;
             text-align: center;
@@ -266,14 +266,14 @@
         .emotion-card .emotion-name {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #333;
+            color: #072c54;
             text-transform: capitalize;
             margin-bottom: 6px;
         }
 
         .emotion-bar-track {
             height: 6px;
-            background: #dee2e6;
+            background: #f4f3ef;
             border-radius: 3px;
             overflow: hidden;
             margin-bottom: 4px;
@@ -287,15 +287,15 @@
 
         .emotion-card .emotion-value {
             font-size: 0.78rem;
-            color: #666;
+            color: #adc4e0;
         }
 
         /* emotion colors */
-        .emotion-joy       .emotion-bar-fill { background: #fbbf24; }
-        .emotion-sadness    .emotion-bar-fill { background: #60a5fa; }
-        .emotion-anger      .emotion-bar-fill { background: #f87171; }
-        .emotion-fear       .emotion-bar-fill { background: #a78bfa; }
-        .emotion-surprise   .emotion-bar-fill { background: #34d399; }
+        .emotion-joy       .emotion-bar-fill { background: #c9a44e; }
+        .emotion-sadness    .emotion-bar-fill { background: #7fb0e0; }
+        .emotion-anger      .emotion-bar-fill { background: #e0705f; }
+        .emotion-fear       .emotion-bar-fill { background: #7fb0e0; }
+        .emotion-surprise   .emotion-bar-fill { background: #35b56a; }
 
         /* ---------- Aspects Table ---------- */
         .aspects-section { display: none; }
@@ -309,13 +309,13 @@
         .aspects-table td {
             padding: 10px 14px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #f4f3ef;
             font-size: 0.93rem;
         }
 
         .aspects-table th {
             font-weight: 600;
-            color: #555;
+            color: #adc4e0;
             font-size: 0.82rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -332,15 +332,15 @@
             text-transform: capitalize;
         }
 
-        .aspect-sentiment.positive { background: #d1fae5; color: #065f46; }
-        .aspect-sentiment.negative { background: #fee2e2; color: #991b1b; }
-        .aspect-sentiment.neutral  { background: #e0e7ff; color: #3730a3; }
+        .aspect-sentiment.positive { background: #f4f3ef; color: #0d3966; }
+        .aspect-sentiment.negative { background: #f4f3ef; color: #e0705f; }
+        .aspect-sentiment.neutral  { background: #f4f3ef; color: #7fb0e0; }
 
         /* ---------- Footer ---------- */
         footer {
             text-align: center;
             font-size: 0.82rem;
-            color: #999;
+            color: #adc4e0;
             margin-top: 20px;
         }
 
@@ -408,7 +408,7 @@
         <div class="aspects-section" id="aspects-section">
             <hr class="divider">
             <div class="section-title">Aspect-Based Sentiment</div>
-            <p style="font-size:0.85rem;color:#888;margin-bottom:10px;">
+            <p style="font-size:0.85rem;color:#adc4e0;margin-bottom:10px;">
                 Aspects are extracted when the text contains 10+ words and mentions
                 recognized topics (price, quality, service, delivery, usability).
             </p>
