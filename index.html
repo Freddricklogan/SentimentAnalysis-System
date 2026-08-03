@@ -5,37 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sentiment Analysis System &mdash; Live Demo</title>
 <meta name="description" content="Client-side NLP demo: sentiment, emotion, and aspect-based analysis running entirely in your browser. By Freddrick Logan.">
-<meta name="theme-color" content="#0a0e0a">
+<meta name="theme-color" content="#001327">
 <style>
   :root{
-    --bg:#0a0e0a; --panel:#10160f; --panel2:#0d130c;
-    --green:#33ff66; --green2:#2fbf5f; --green-d:#1f8a3f;
-    --gold:#d9a441; --red:#cf5c4e; --sage:#7fa98a; --ggray:#5f9e7a;
-    --text:#cdefd6; --muted:#7f9585; --line:rgba(51,255,102,.18);
+    --bg:#001327; --panel:#002147; --panel2:#002147;
+    --green:#4ce084; --green2:#35b56a; --green-d:#1f8a3f;
+    --gold:#c9a44e; --red:#e0705f; --sage:#35b56a; --ggray:#35b56a;
+    --text:#f4f3ef; --muted:#adc4e0; --line:rgba(76, 224, 132,.18);
     --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    background:radial-gradient(900px 500px at 50% -10%,rgba(51,255,102,.06),transparent),var(--bg);
+    background:radial-gradient(900px 500px at 50% -10%,rgba(76, 224, 132,.06),transparent),var(--bg);
     color:var(--text);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
   a{color:var(--green)}
   .wrap{max-width:860px;margin:0 auto;padding:36px 20px 64px}
   header{text-align:center;margin-bottom:30px}
   .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:var(--green);opacity:.85}
   h1{font-size:2rem;font-weight:800;margin:10px 0 6px;letter-spacing:-.01em;
-    text-shadow:0 0 20px rgba(51,255,102,.28)}
+    text-shadow:0 0 20px rgba(76, 224, 132,.28)}
   header p{color:var(--muted);font-size:1.02rem}
   .src{display:inline-flex;gap:7px;align-items:center;margin-top:14px;font-family:var(--mono);
     font-size:.8rem;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:7px 15px;text-decoration:none}
-  .src:hover{border-color:var(--green);background:rgba(51,255,102,.08)}
+  .src:hover{border-color:var(--green);background:rgba(76, 224, 132,.08)}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;margin-bottom:22px}
   label{display:block;font-weight:600;margin-bottom:9px;font-size:.92rem;color:var(--text)}
   textarea{width:100%;min-height:130px;resize:vertical;background:var(--panel2);color:var(--text);
     border:1px solid var(--line);border-radius:10px;padding:14px;font-size:1rem;font-family:inherit;line-height:1.55}
-  textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(51,255,102,.14)}
+  textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(76, 224, 132,.14)}
   .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
   button{cursor:pointer;font-weight:700;border:none;border-radius:9px;padding:12px 22px;font-size:.95rem;
-    background:var(--green);color:#0a0e0a;transition:.15s}
+    background:var(--green);color:#001327;transition:.15s}
   button:hover{background:var(--green2)}
   button.ghost{background:transparent;color:var(--text);border:1px solid var(--line);font-weight:600}
   button.ghost:hover{border-color:var(--green);color:var(--green)}
@@ -49,9 +49,9 @@
   .verdict{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
   .badge{font-family:var(--mono);font-weight:800;font-size:1.15rem;letter-spacing:.06em;text-transform:uppercase;
     padding:12px 22px;border-radius:10px;border:1.5px solid}
-  .badge.positive{color:var(--green);border-color:var(--green);background:rgba(51,255,102,.09)}
-  .badge.negative{color:var(--red);border-color:var(--red);background:rgba(207,92,78,.09)}
-  .badge.neutral{color:var(--gold);border-color:var(--gold);background:rgba(217,164,65,.09)}
+  .badge.positive{color:var(--green);border-color:var(--green);background:rgba(76, 224, 132,.09)}
+  .badge.negative{color:var(--red);border-color:var(--red);background:rgba(224, 112, 95,.09)}
+  .badge.neutral{color:var(--gold);border-color:var(--gold);background:rgba(201, 164, 78,.09)}
   .conf{flex:1;min-width:200px}
   .conf .lab{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:6px;font-family:var(--mono)}
   .meter{height:12px;background:var(--panel2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
@@ -71,15 +71,15 @@
     border:1px solid var(--line);border-radius:9px;padding:12px 15px}
   .aspect .name{text-transform:capitalize;font-weight:600}
   .tag{font-family:var(--mono);font-size:.74rem;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:6px;letter-spacing:.05em}
-  .tag.positive{color:var(--green);background:rgba(51,255,102,.12)}
-  .tag.negative{color:var(--red);background:rgba(207,92,78,.14)}
-  .tag.neutral{color:var(--gold);background:rgba(217,164,65,.14)}
+  .tag.positive{color:var(--green);background:rgba(76, 224, 132,.12)}
+  .tag.negative{color:var(--red);background:rgba(224, 112, 95,.14)}
+  .tag.neutral{color:var(--gold);background:rgba(201, 164, 78,.14)}
   .empty{color:var(--muted);font-size:.9rem;font-style:italic}
   .tokens{font-family:var(--mono);font-size:.82rem;line-height:2;margin-top:4px}
   .tok{padding:2px 6px;border-radius:5px;margin:2px}
-  .tok.pos{background:rgba(51,255,102,.14);color:var(--green)}
-  .tok.neg{background:rgba(207,92,78,.16);color:var(--red)}
-  .tok.negation{background:rgba(217,164,65,.14);color:var(--gold);font-style:italic}
+  .tok.pos{background:rgba(76, 224, 132,.14);color:var(--green)}
+  .tok.neg{background:rgba(224, 112, 95,.16);color:var(--red)}
+  .tok.negation{background:rgba(201, 164, 78,.14);color:var(--gold);font-style:italic}
   .note{font-size:.82rem;color:var(--muted);margin-top:10px}
   footer{text-align:center;margin-top:40px;padding-top:26px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
   footer a{color:var(--green);text-decoration:none}
