@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentiment Analysis System &mdash; Live Demo</title>
+<meta name="description" content="Client-side NLP demo: sentiment, emotion, and aspect-based analysis running entirely in your browser. By Freddrick Logan.">
+<meta name="theme-color" content="#0a0e0a">
+<style>
+  :root{
+    --bg:#0a0e0a; --panel:#10160f; --panel2:#0d130c;
+    --green:#33ff66; --green2:#2fbf5f; --green-d:#1f8a3f;
+    --gold:#d9a441; --red:#cf5c4e; --sage:#7fa98a; --ggray:#5f9e7a;
+    --text:#cdefd6; --muted:#7f9585; --line:rgba(51,255,102,.18);
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:radial-gradient(900px 500px at 50% -10%,rgba(51,255,102,.06),transparent),var(--bg);
+    color:var(--text);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+  a{color:var(--green)}
+  .wrap{max-width:860px;margin:0 auto;padding:36px 20px 64px}
+  header{text-align:center;margin-bottom:30px}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:var(--green);opacity:.85}
+  h1{font-size:2rem;font-weight:800;margin:10px 0 6px;letter-spacing:-.01em;
+    text-shadow:0 0 20px rgba(51,255,102,.28)}
+  header p{color:var(--muted);font-size:1.02rem}
+  .src{display:inline-flex;gap:7px;align-items:center;margin-top:14px;font-family:var(--mono);
+    font-size:.8rem;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:7px 15px;text-decoration:none}
+  .src:hover{border-color:var(--green);background:rgba(51,255,102,.08)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;margin-bottom:22px}
+  label{display:block;font-weight:600;margin-bottom:9px;font-size:.92rem;color:var(--text)}
+  textarea{width:100%;min-height:130px;resize:vertical;background:var(--panel2);color:var(--text);
+    border:1px solid var(--line);border-radius:10px;padding:14px;font-size:1rem;font-family:inherit;line-height:1.55}
+  textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(51,255,102,.14)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+  button{cursor:pointer;font-weight:700;border:none;border-radius:9px;padding:12px 22px;font-size:.95rem;
+    background:var(--green);color:#0a0e0a;transition:.15s}
+  button:hover{background:var(--green2)}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line);font-weight:600}
+  button.ghost:hover{border-color:var(--green);color:var(--green)}
+  .examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{font-family:var(--mono);font-size:.76rem;color:var(--muted);background:var(--panel2);
+    border:1px solid var(--line);border-radius:7px;padding:7px 11px;cursor:pointer}
+  .chip:hover{color:var(--green);border-color:var(--green)}
+  .results{display:none}
+  .results.show{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .verdict{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .badge{font-family:var(--mono);font-weight:800;font-size:1.15rem;letter-spacing:.06em;text-transform:uppercase;
+    padding:12px 22px;border-radius:10px;border:1.5px solid}
+  .badge.positive{color:var(--green);border-color:var(--green);background:rgba(51,255,102,.09)}
+  .badge.negative{color:var(--red);border-color:var(--red);background:rgba(207,92,78,.09)}
+  .badge.neutral{color:var(--gold);border-color:var(--gold);background:rgba(217,164,65,.09)}
+  .conf{flex:1;min-width:200px}
+  .conf .lab{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:6px;font-family:var(--mono)}
+  .meter{height:12px;background:var(--panel2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .meter>i{display:block;height:100%;border-radius:99px;transition:width .5s ease}
+  .score-line{margin-top:14px;font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+  .score-line b{color:var(--text)}
+  h3{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--green);
+    font-family:var(--mono);margin-bottom:16px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+  .emo{display:grid;gap:11px}
+  .emo-row{display:grid;grid-template-columns:96px 1fr 44px;align-items:center;gap:12px}
+  .emo-row span:first-child{font-size:.86rem;color:var(--text);text-transform:capitalize}
+  .emo-row span:last-child{font-family:var(--mono);font-size:.8rem;color:var(--muted);text-align:right}
+  .bar{height:9px;background:var(--panel2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--green-d),var(--green));border-radius:99px;transition:width .5s}
+  .aspects{display:grid;gap:10px}
+  .aspect{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);
+    border:1px solid var(--line);border-radius:9px;padding:12px 15px}
+  .aspect .name{text-transform:capitalize;font-weight:600}
+  .tag{font-family:var(--mono);font-size:.74rem;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:6px;letter-spacing:.05em}
+  .tag.positive{color:var(--green);background:rgba(51,255,102,.12)}
+  .tag.negative{color:var(--red);background:rgba(207,92,78,.14)}
+  .tag.neutral{color:var(--gold);background:rgba(217,164,65,.14)}
+  .empty{color:var(--muted);font-size:.9rem;font-style:italic}
+  .tokens{font-family:var(--mono);font-size:.82rem;line-height:2;margin-top:4px}
+  .tok{padding:2px 6px;border-radius:5px;margin:2px}
+  .tok.pos{background:rgba(51,255,102,.14);color:var(--green)}
+  .tok.neg{background:rgba(207,92,78,.16);color:var(--red)}
+  .tok.negation{background:rgba(217,164,65,.14);color:var(--gold);font-style:italic}
+  .note{font-size:.82rem;color:var(--muted);margin-top:10px}
+  footer{text-align:center;margin-top:40px;padding-top:26px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+  footer a{color:var(--green);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  .foot-name{font-weight:700;color:var(--text)}
+  .copyright{margin-top:12px;font-size:.78rem;color:var(--muted);opacity:.8}
+  @media(max-width:560px){.emo-row{grid-template-columns:80px 1fr 40px}h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Natural Language Processing</div>
+    <h1>Sentiment Analysis System</h1>
+    <p>Sentiment, emotion &amp; aspect analysis &mdash; running entirely in your browser.</p>
+    <a class="src" href="https://github.com/Freddricklogan/SentimentAnalysis-System" target="_blank" rel="noopener">
+      &#9654; View Source on GitHub
+    </a>
+  </header>
+
+  <div class="card">
+    <label for="text">Enter text to analyze</label>
+    <textarea id="text" placeholder="e.g. The delivery was fast and the quality is excellent, but the price is a little too high and support was disappointing.">The delivery was fast and the quality is excellent, but the price is a little too high and the customer support was disappointing.</textarea>
+    <div class="row">
+      <button id="go">Analyze Text</button>
+      <button class="ghost" id="clear">Clear</button>
+    </div>
+    <div class="examples" id="examples"></div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="card">
+      <h3>Overall Sentiment</h3>
+      <div class="verdict">
+        <div class="badge" id="badge">&mdash;</div>
+        <div class="conf">
+          <div class="lab"><span>Confidence</span><span id="confPct">0%</span></div>
+          <div class="meter"><i id="confBar" style="width:0"></i></div>
+          <div class="score-line">Polarity score: <b id="polScore">0.00</b> &middot; <span id="tokCount">0</span> sentiment-bearing terms</div>
+        </div>
+      </div>
+      <div class="tokens" id="tokens"></div>
+      <p class="note">Deterministic lexicon model with negation (&ldquo;not good&rdquo;) and intensifier (&ldquo;very&rdquo;) handling &mdash; no server, no randomness.</p>
+    </div>
+
+    <div class="card">
+      <h3>Emotion Detection</h3>
+      <div class="emo" id="emo"></div>
+    </div>
+
+    <div class="card">
+      <h3>Aspect-Based Sentiment</h3>
+      <div class="aspects" id="aspects"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div>Built by <a class="foot-name" href="https://fredlogan.phd">Freddrick Logan</a> &mdash; Technologist &amp; Education</div>
+    <div style="margin-top:6px">
+      <a href="https://github.com/Freddricklogan/SentimentAnalysis-System">Source</a> &middot;
+      <a href="https://fredlogan.phd">fredlogan.phd</a> &middot;
+      <a href="https://github.com/Freddricklogan">GitHub</a>
+    </div>
+    <div class="copyright">&copy; 2026 Freddrick Logan &mdash; Technologist &amp; Education. All rights reserved.</div>
+  </footer>
+</div>
+
+<script>
+/* ---- Lexicon-based sentiment engine (deterministic) ---- */
+// AFINN-style valence scores (-5..+5), compact but representative subset.
+const LEX = {
+  // strong positive
+  amazing:4,excellent:4,fantastic:4,outstanding:4,superb:4,brilliant:4,perfect:4,love:3,loved:3,
+  wonderful:3,great:3,awesome:4,delightful:3,best:3,incredible:4,exceptional:4,flawless:4,
+  // mild positive
+  good:2,nice:2,fast:2,happy:2,glad:2,pleased:2,enjoy:2,enjoyed:2,helpful:2,reliable:2,easy:2,
+  smooth:2,recommend:2,recommended:2,quality:1,affordable:2,friendly:2,responsive:2,clean:1,solid:2,
+  impressive:3,satisfied:2,worth:2,works:1,improved:2,clear:1,intuitive:2,
+  // strong negative
+  terrible:-4,horrible:-4,awful:-4,worst:-4,hate:-3,hated:-3,disgusting:-4,atrocious:-4,useless:-3,
+  broken:-3,unusable:-4,garbage:-3,nightmare:-3,appalling:-4,
+  // mild negative
+  bad:-2,poor:-2,slow:-2,disappointing:-2,disappointed:-2,expensive:-1,overpriced:-2,buggy:-2,
+  clunky:-2,confusing:-2,frustrating:-3,annoying:-2,difficult:-2,hard:-1,unhappy:-2,unreliable:-3,
+  rude:-3,lacking:-2,mediocre:-2,cheap:-1,glitchy:-2,laggy:-2,crash:-2,crashes:-2,expensive_:-1,
+  problem:-1,problems:-2,issue:-1,issues:-2,fails:-2,failed:-2,worse:-2
+};
+const NEGATIONS = new Set(['not','no','never',"n't",'cannot',"can't",'without','neither','nor','hardly','barely','rarely']);
+const INTENSIFIERS = {very:1.5,really:1.5,extremely:2,incredibly:2,so:1.3,too:1.3,absolutely:1.8,quite:1.2,super:1.6,highly:1.5,totally:1.6};
+const DIMINISHERS = {slightly:0.5,somewhat:0.6,'a':1,little:0.6,bit:0.6,kind:0.7,fairly:0.8,rather:0.8};
+
+const EMO = {
+  joy:['happy','joy','delighted','pleased','glad','enjoy','enjoyed','love','loved','excited','thrilled','cheerful','wonderful','great','fantastic'],
+  sadness:['sad','unhappy','disappointed','upset','miserable','depressed','heartbroken','sorrow','regret','crying','gloomy'],
+  anger:['angry','annoyed','frustrated','irritated','furious','outraged','mad','hate','hated','rage','disgusted'],
+  fear:['afraid','scared','terrified','anxious','worried','nervous','fearful','panic','dread','concerned','uneasy'],
+  surprise:['surprised','amazed','astonished','shocked','stunned','unexpected','wow','incredible','unbelievable']
+};
+const ASPECTS = {
+  price:['price','cost','pricing','expensive','cheap','affordable','value','money','fee','fees'],
+  quality:['quality','build','durable','durability','material','craftsmanship','reliable','solid'],
+  service:['service','support','staff','help','helpful','customer','representative','team'],
+  delivery:['delivery','shipping','arrived','arrival','dispatch','courier','package','packaging'],
+  usability:['usability','interface','ui','ux','easy','intuitive','navigation','design','experience','use']
+};
+
+function tokenize(text){
+  return text.toLowerCase().replace(/[^a-z0-9'\s]/g,' ').split(/\s+/).filter(Boolean);
+}
+
+function scoreSentiment(tokens){
+  let score=0, hits=[], count=0;
+  for(let i=0;i<tokens.length;i++){
+    let w=tokens[i];
+    let val=LEX[w];
+    if(val===undefined) continue;
+    let mult=1, negated=false;
+    // look back up to 3 tokens for negation / intensifier / diminisher
+    for(let j=Math.max(0,i-3);j<i;j++){
+      const p=tokens[j];
+      if(NEGATIONS.has(p)) negated=true;
+      if(INTENSIFIERS[p]) mult*=INTENSIFIERS[p];
+      if(DIMINISHERS[p]) mult*=DIMINISHERS[p];
+    }
+    let eff=val*mult;
+    if(negated) eff=-eff*0.9;
+    score+=eff; count++;
+    hits.push({w,val:eff,negated});
+  }
+  return {score,hits,count};
+}
+
+function classify(score){
+  if(score>0.5) return 'positive';
+  if(score<-0.5) return 'negative';
+  return 'neutral';
+}
+
+function analyze(text){
+  const tokens=tokenize(text);
+  const {score,hits,count}=scoreSentiment(tokens);
+  const sentiment=classify(score);
+  // confidence: magnitude of score relative to sentiment terms + coverage, bounded
+  const perTerm=count?Math.abs(score)/count:0;
+  let conf;
+  if(sentiment==='neutral'){
+    conf=0.40+Math.min(0.20,(count?0.05*count:0.15));
+  }else{
+    conf=0.55+Math.min(0.40, perTerm*0.10 + Math.min(count,6)*0.03);
+  }
+  conf=Math.max(0.35,Math.min(0.98,conf));
+  return {sentiment,confidence:conf,score,hits,count,tokens,
+    emotions:detectEmotions(tokens), aspects:extractAspects(text,tokens)};
+}
+
+function detectEmotions(tokens){
+  const out={};
+  for(const emo in EMO){
+    let s=0;
+    for(const t of tokens) if(EMO[emo].includes(t)) s+=1;
+    out[emo]=Math.min(1,s*0.34);
+  }
+  return out;
+}
+
+function extractAspects(text,tokens){
+  const found={};
+  for(const asp in ASPECTS){
+    let idx=-1;
+    for(let i=0;i<tokens.length;i++){ if(ASPECTS[asp].includes(tokens[i])){idx=i;break;} }
+    if(idx<0) continue;
+    // sentiment in a +/-4 token window
+    const win=tokens.slice(Math.max(0,idx-4),Math.min(tokens.length,idx+5));
+    const {score}=scoreSentiment(win);
+    found[asp]=classify(score);
+  }
+  return found;
+}
+
+/* ---- Rendering ---- */
+const $=id=>document.getElementById(id);
+const COLOR={positive:'var(--green)',negative:'var(--red)',neutral:'var(--gold)'};
+
+function render(r){
+  $('results').classList.add('show');
+  const b=$('badge'); b.textContent=r.sentiment; b.className='badge '+r.sentiment;
+  $('confPct').textContent=Math.round(r.confidence*100)+'%';
+  const cb=$('confBar'); cb.style.width=(r.confidence*100)+'%'; cb.style.background=COLOR[r.sentiment];
+  $('polScore').textContent=r.score.toFixed(2);
+  $('tokCount').textContent=r.count;
+  // token chips
+  $('tokens').innerHTML = r.hits.length
+    ? r.hits.map(h=>`<span class="tok ${h.negated?'negation':(h.val>=0?'pos':'neg')}">${h.w}${h.negated?' (negated)':''} ${h.val>=0?'+':''}${h.val.toFixed(1)}</span>`).join(' ')
+    : '<span class="empty">No sentiment-bearing terms detected &mdash; text reads as neutral.</span>';
+  // emotions
+  const emoOrder=Object.entries(r.emotions).sort((a,b)=>b[1]-a[1]);
+  $('emo').innerHTML=emoOrder.map(([k,v])=>`
+    <div class="emo-row"><span>${k}</span>
+      <div class="bar"><i style="width:${Math.round(v*100)}%"></i></div>
+      <span>${Math.round(v*100)}%</span></div>`).join('');
+  // aspects
+  const asp=Object.entries(r.aspects);
+  $('aspects').innerHTML = asp.length
+    ? asp.map(([k,v])=>`<div class="aspect"><span class="name">${k}</span><span class="tag ${v}">${v}</span></div>`).join('')
+    : '<div class="empty">No specific aspects (price, quality, service, delivery, usability) mentioned.</div>';
+  $('results').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+$('go').addEventListener('click',()=>{
+  const t=$('text').value.trim();
+  if(!t){$('text').focus();return;}
+  render(analyze(t));
+});
+$('clear').addEventListener('click',()=>{$('text').value='';$('results').classList.remove('show');$('text').focus();});
+$('text').addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter')$('go').click();});
+
+const EXAMPLES=[
+  "Absolutely love this! The build quality is excellent and it works perfectly every time.",
+  "Terrible experience. The app is buggy, support was rude, and it crashes constantly.",
+  "The delivery was fast but the product quality was not good and the price is too expensive.",
+  "It's fine. Does what it says. Nothing special but nothing wrong either."
+];
+$('examples').innerHTML=EXAMPLES.map((e,i)=>`<span class="chip" data-i="${i}">&#9654; Example ${i+1}</span>`).join('');
+$('examples').addEventListener('click',e=>{
+  const c=e.target.closest('.chip'); if(!c)return;
+  $('text').value=EXAMPLES[+c.dataset.i]; $('go').click();
+});
+
+// analyze the prefilled example on load
+render(analyze($('text').value));
+</script>
+</body>
+</html>
