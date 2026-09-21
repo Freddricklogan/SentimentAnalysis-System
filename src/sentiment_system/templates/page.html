@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Sentiment Analysis System — SST-2 evaluation</title>
+<meta name="description" content="Evaluation of a fine-tuned DistilBERT sentiment classifier and a VADER baseline on the SST-2 development set, generated in CI; the FastAPI service with batch endpoint and aspect windows runs locally or in Docker. By Freddrick Logan.">
+<meta name="author" content="Freddrick Logan">
+<link rel="canonical" href="$pages">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b1220'/%3E%3Cpath d='M8 10h16v10H14l-5 4v-4H8z' fill='none' stroke='%2358a6ff' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M12 15h8' stroke='%233fb950' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap">
+<link rel="stylesheet" href="src/exec-shell.css">
+<link rel="stylesheet" href="src/report.css">
+<script type="application/json" id="report-data">$report_json</script>
+</head>
+<body>
+<main id="demo-root" class="exec-main">
+  <h2 class="sr-only">Evaluation report</h2>
+  <p class="ss-note"><strong>Data:</strong> $source. <strong>Model:</strong> <code>$model</code>. $n sentences scored on CPU by <code>sentiment-system report</code> in the CI run that published this page. The service itself (<code>POST /analyze</code>, <code>POST /analyze/batch</code>) runs locally or from the Dockerfile; nothing is hosted here.</p>
+
+  <section class="ss-panel" id="s-scores" aria-labelledby="h-scores">
+    <h3 id="h-scores">1. Transformer against a lexicon baseline</h3>
+    <p class="ss-lead">Same 872 sentences, same positive/negative convention. DistilBERT reaches <strong>$t_acc</strong> accuracy (F1 $t_f1); VADER, which counts words from a hand-built lexicon, reaches <strong>$b_acc</strong> (F1 $b_f1). The last row is throughput on the CI runner's CPU.</p>
+    <div class="ss-scroll">$scores_table</div>
+  </section>
+
+  <section class="ss-panel" id="s-conflicts" aria-labelledby="h-conflicts">
+    <h3 id="h-conflicts">2. Where the two disagree</h3>
+    <p class="ss-lead">The first eight sentences on which the classifiers differ, with the labelled truth.</p>
+    <div class="ss-scroll">$conflicts</div>
+  </section>
+
+  <p class="ss-note">Raw numbers: <a href="report.json">report.json</a>.</p>
+</main>
+<script type="module" src="src/report.js"></script>
+</body>
+</html>
