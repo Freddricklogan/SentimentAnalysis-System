@@ -5,6 +5,7 @@ const data = JSON.parse(document.getElementById('report-data').textContent);
 const pct = (v) => `${(v * 100).toFixed(2)}%`;
 
 const shell = mountExecShell({
+  theme: 'signal',
   title: 'Sentiment Analysis System',
   tagline: 'A fine-tuned DistilBERT classifier behind a FastAPI service with Pydantic v2 models and a batch endpoint, evaluated in CI against the SST-2 development set beside a VADER lexicon baseline. The API runs locally or in Docker; this page is the evaluation it publishes.',
   repo: 'https://github.com/Freddricklogan/SentimentAnalysis-System',

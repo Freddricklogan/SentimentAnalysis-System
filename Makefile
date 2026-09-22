@@ -1,7 +1,9 @@
 .PHONY: check lint typecheck test build security serve
 export SENTIMENT_INTEGRATION=1
 check: lint typecheck test security build
-lint:
+lint: contrast
+contrast:
+	python3 src/sentiment_system/shell/contrast_check.py src/sentiment_system/shell/exec-shell.css
 	uv run ruff check . && uv run ruff format --check .
 typecheck:
 	uv run mypy
